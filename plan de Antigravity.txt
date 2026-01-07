@@ -1,0 +1,31 @@
+Task List: Wellness Coffee Frontend
+ Project Setup
+ Initialize Next.js 14+ project in front_end with Tailwind CSS
+ Install dependencies (framer-motion, lucide-react, clsx, tailwind-merge)
+ clean up default files
+ Architecture & Theming
+ Configure Tailwind theme (colors: Coffee, Military, Clinical, Zen)
+ Create ThemeContext or store for dynamic personality switching
+ Create layout wrapper for handling themes
+ Component Library (atoms)
+ Button (variants: primary, ghost, panic)
+ Card (variants: glass, solid, outline)
+ Input/Select
+ Feature: Zen Onboarding
+ Step 1: The Leak (Cards selection)
+ Step 2: The Anchor (Goal input)
+ Step 3: The Partner (Persona selection with "audio" placeholder)
+ Step 4: The Contract (Slide to assign)
+ Feature: Dashboard
+ "Capital Rescued" big counter
+ Donut Chart component
+ Goal Pipeline progress bar
+ Feature: Chat Interface
+ Chat Layout (High density)
+ Message Bubbles (User, Zen, Hartman, House)
+ Panic Button FA (Long press interaction)
+ Verification
+ Verify responsive design (Mobile First)
+ Verify theme switching
+ Documentation
+ Create Walkthrough

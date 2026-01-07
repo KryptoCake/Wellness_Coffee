@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  /* Coffee / Zen Palette */
+  --color-coffee-50: #fdfaf7;
+  --color-coffee-100: #f7ede2;
+  --color-coffee-200: #ead2b8;
+  --color-coffee-300: #d6b08c;
+  --color-coffee-400: #c18e63;
+  --color-coffee-500: #ad744a;
+  --color-coffee-600: #8e5a3a;
+  --color-coffee-700: #744630;
+  --color-coffee-800: #5d3929;
+  --color-coffee-900: #4d2f23;
+  --color-coffee-950: #291811;
+
+  /* Military / Hartman Palette */
+  --color-military-50: #f5f6f2;
+  --color-military-100: #e8eade;
+  --color-military-200: #d0d6bc;
+  --color-military-300: #afba91;
+  --color-military-400: #8e9a6b;
+  --color-military-500: #717d52;
+  --color-military-600: #58613f;
+  --color-military-700: #444b32;
+  --color-military-800: #383d2a;
+  --color-military-900: #303426;
+  --color-military-950: #1a1d13;
+
+  /* Clinical / House Palette */
+  --color-clinical-50: #f0f7ff;
+  --color-clinical-100: #e0effe;
+  --color-clinical-200: #bae0fd;
+  --color-clinical-300: #7cc7fb;
+  --color-clinical-400: #38a9f8;
+  --color-clinical-500: #0e8dec;
+  --color-clinical-600: #026ecc;
+  --color-clinical-700: #0358a5;
+  --color-clinical-800: #074b88;
+  --color-clinical-900: #0c4071;
+  --color-clinical-950: #08284a;
+
+  /* Semantic background/foreground will be controlled by CSS variables switched at layout level */
+}
+
+@layer base {
+  :root {
+    --personality-accent: var(--color-coffee-500);
+    --personality-bg: var(--color-coffee-50);
+    --personality-text: var(--color-coffee-950);
+    --personality-card: #ffffff;
+    --font-personality: var(--font-geist-sans);
+  }
+
+  [data-personality="hartman"] {
+    --personality-accent: var(--color-military-500);
+    --personality-bg: var(--color-military-950);
+    --personality-text: var(--color-military-50);
+    --personality-card: var(--color-military-900);
+    --font-personality: var(--font-geist-mono);
+  }
+
+  [data-personality="house"] {
+    --personality-accent: var(--color-clinical-500);
+    --personality-bg: #ffffff;
+    --personality-text: var(--color-clinical-950);
+    --personality-card: var(--color-clinical-50);
+    --font-personality: var(--font-geist-sans);
+  }
+
+  [data-personality="zen"] {
+    --personality-accent: #2d5a27;
+    --personality-bg: #f9fbf9;
+    --personality-text: #1a2e1a;
+    --personality-card: #ffffff;
+    --font-personality: var(--font-geist-sans);
+  }
+
+  body {
+    background-color: var(--personality-bg);
+    color: var(--personality-text);
+    font-family: var(--font-personality);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
