@@ -2,6 +2,7 @@ import lancedb
 import os
 import uuid
 import time
+import socket
 from app.core.config import settings
 from google import genai
 from google.genai import types
@@ -31,21 +32,25 @@ class MemoryService:
         self.embedding_model = "text-embedding-004"
 
     def _get_embedding(self, text: str) -> tuple[List[float], str | None]:
-        """Genera el vector embedding para un texto usando Gemini."""
-        try:
-            result = self.client.models.embed_content(
-                model=self.embedding_model,
-                contents=text,
-                config=types.EmbedContentConfig()
-            )
-            # Manejo robusto de la respuesta dependiendo de la versión del SDK
-            if hasattr(result, 'embeddings') and result.embeddings:
-                return result.embeddings[0].values, None
-            return [], "No embeddings returned from Gemini API"
-        except Exception as e:
-            error_msg = f"Error generando embedding: {e}"
-            print(error_msg)
-            return [], error_msg
+        """Genera el vector embedding para un texto usando Gemini con reintentos."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                result = self.client.models.embed_content(
+                    model=self.embedding_model,
+                    contents=text,
+                    config=types.EmbedContentConfig()
+                )
+                if hasattr(result, 'embeddings') and result.embeddings:
+                    return result.embeddings[0].values, None
+                return [], "No embeddings returned from Gemini API"
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    error_msg = f"Error generando embedding (Intento {attempt + 1}/{max_retries}): {e}"
+                    print(error_msg)
+                    return [], error_msg
+                time.sleep(1 * (attempt + 1)) # Exponential backoff simple
+        return [], "Max retries exceeded"
 
     def add_memory(self, text: str, source: str = "user", metadata: str = "{}") -> tuple[bool, str | None]:
         """Guarda un nuevo recuerdo en la base de datos vectorial."""

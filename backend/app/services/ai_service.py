@@ -1,12 +1,8 @@
 from google import genai
 from google.genai import types
-import os
+from app.core.config import settings
 from app.models.all_models import PersonalityType
 from app.services.memory_service import memory_service
-
-# Configuración de la nueva librería Google GenAI
-GENAI_API_KEY = os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=GENAI_API_KEY) if GENAI_API_KEY else None
 
 # System Prompts (Trailers / Guiones base)
 SYSTEM_PROMPTS = {
@@ -42,14 +38,15 @@ SYSTEM_PROMPTS = {
 
 class AIService:
     def __init__(self):
-        self.model_id = "gemini-2.0-flash" # Usando la versión más reciente disponible en el nuevo SDK
+        self.model_id = "gemini-2.0-flash"
+        self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
     async def generate_response(self, user_input: str, personality: PersonalityType, context_data: dict = None) -> str:
         """
         Genera una respuesta utilizando la personalidad configurada con el nuevo SDK google.genai
         """
-        if not client:
-            return "Error: GEMINI_API_KEY no configurada."
+        if not self.client:
+             return "Error: GEMINI_API_KEY no configurada."
 
         system_instruction = SYSTEM_PROMPTS.get(personality, SYSTEM_PROMPTS[PersonalityType.ZEN])
         
@@ -67,7 +64,7 @@ class AIService:
         full_prompt = f"{context_str}\n{memory_context}\n\nUSUARIO DICE: {user_input}"
 
         try:
-            response = client.models.generate_content(
+            response = self.client.models.generate_content(
                 model=self.model_id,
                 contents=full_prompt,
                 config=types.GenerateContentConfig(
@@ -84,7 +81,7 @@ class AIService:
         """
         Analiza texto de voz para extraer intención de gasto y nivel de impulsividad usando el nuevo SDK.
         """
-        if not client:
+        if not self.client:
             return {"error": "API Key not configured"}
 
         prompt = f"""
@@ -99,7 +96,7 @@ class AIService:
         Texto: "{transcript}"
         """
         try:
-            response = client.models.generate_content(
+            response = self.client.models.generate_content(
                 model=self.model_id,
                 contents=prompt,
                 config=types.GenerateContentConfig(
@@ -108,4 +105,4 @@ class AIService:
             )
             return response.text 
         except Exception as e:
-            return {"error": str(e)}
+            raise Exception(f"Voice analysis failed: {str(e)}")
