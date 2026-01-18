@@ -4,7 +4,6 @@ from typing import List, Optional
 from app.services.memory_service import memory_service
 
 router = APIRouter(
-    prefix="/memory",
     tags=["memory"]
 )
 
