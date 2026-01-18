@@ -3,9 +3,15 @@
 import { Card } from "@/components/ui/Card";
 import { motion } from "framer-motion";
 import { Target, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function GoalPipeline({ goal }: { goal: { name: string, target: number, current: number } }) {
+    const [mounted, setMounted] = useState(false);
     const progress = (goal.current / goal.target) * 100;
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
         <Card className="p-6 space-y-4 overflow-hidden relative" variant="solid">
@@ -18,7 +24,7 @@ export function GoalPipeline({ goal }: { goal: { name: string, target: number, c
                     <h2 className="text-xl font-bold">{goal.name}</h2>
                 </div>
                 <div className="text-right">
-                    <p className="text-sm font-bold">$ {goal.target.toLocaleString()}</p>
+                    <p className="text-sm font-bold">$ {mounted ? goal.target.toLocaleString() : goal.target}</p>
                     <p className="text-[10px] text-[var(--personality-text)]/40 uppercase">Target</p>
                 </div>
             </div>
@@ -26,7 +32,7 @@ export function GoalPipeline({ goal }: { goal: { name: string, target: number, c
             <div className="space-y-2">
                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-[var(--personality-text)]/40">
                     <span>{progress.toFixed(1)}% Complete</span>
-                    <span>$ {(goal.target - goal.current).toLocaleString()} Left</span>
+                    <span>$ {mounted ? (goal.target - goal.current).toLocaleString() : (goal.target - goal.current)} Left</span>
                 </div>
                 <div className="h-4 bg-black/5 rounded-full overflow-hidden p-1">
                     <motion.div
