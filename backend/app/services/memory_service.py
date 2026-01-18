@@ -78,8 +78,9 @@ class MemoryService:
 
     def search_memory(self, query: str, limit: int = 5) -> List[dict]:
         """Busca recuerdos semánticamente similares a la query."""
-        vector = self._get_embedding(query)
+        vector, error = self._get_embedding(query)
         if not vector:
+            print(f"No se pudo generar el vector para la búsqueda: {error}")
             return []
         
         if self.table_name not in self.db.table_names():
@@ -87,7 +88,7 @@ class MemoryService:
 
         try:
             table = self.db.open_table(self.table_name)
-            # LanceDB search devuelve objetos, convertimos a lista de dicts
+            # LanceDB search espera el vector (lista de floats)
             results = table.search(vector).limit(limit).to_list()
             return results
         except Exception as e:
