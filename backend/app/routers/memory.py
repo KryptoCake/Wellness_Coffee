@@ -22,9 +22,9 @@ async def add_memory(item: MemoryCreate):
     """
     Agrega un nuevo recuerdo a la memoria a largo plazo (LanceDB).
     """
-    success = memory_service.add_memory(item.text, item.source, item.metadata)
+    success, error = memory_service.add_memory(item.text, item.source, item.metadata)
     if not success:
-        raise HTTPException(status_code=500, detail="Error saving memory")
+        raise HTTPException(status_code=500, detail=f"Error saving memory: {error}")
     return {"status": "success", "message": "Memory stored"}
 
 @router.get("/search")

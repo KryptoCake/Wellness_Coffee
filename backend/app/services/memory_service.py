@@ -30,7 +30,7 @@ class MemoryService:
         self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
         self.embedding_model = "text-embedding-004"
 
-    def _get_embedding(self, text: str) -> List[float]:
+    def _get_embedding(self, text: str) -> tuple[List[float], str | None]:
         """Genera el vector embedding para un texto usando Gemini."""
         try:
             result = self.client.models.embed_content(
@@ -40,18 +40,19 @@ class MemoryService:
             )
             # Manejo robusto de la respuesta dependiendo de la versión del SDK
             if hasattr(result, 'embeddings') and result.embeddings:
-                return result.embeddings[0].values
-            return []
+                return result.embeddings[0].values, None
+            return [], "No embeddings returned from Gemini API"
         except Exception as e:
-            print(f"Error generando embedding: {e}")
-            return []
+            error_msg = f"Error generando embedding: {e}"
+            print(error_msg)
+            return [], error_msg
 
-    def add_memory(self, text: str, source: str = "user", metadata: str = "{}"):
+    def add_memory(self, text: str, source: str = "user", metadata: str = "{}") -> tuple[bool, str | None]:
         """Guarda un nuevo recuerdo en la base de datos vectorial."""
-        vector = self._get_embedding(text)
+        vector, error = self._get_embedding(text)
         if not vector:
-            print("No se pudo generar el vector para la memoria.")
-            return None
+            print(f"No se pudo generar el vector para la memoria: {error}")
+            return False, f"Embedding generation failed: {error}"
         
         memory_data = [
             {
@@ -69,10 +70,11 @@ class MemoryService:
                 self.db.create_table(self.table_name, data=memory_data)
             else:
                 self.db.open_table(self.table_name).add(memory_data)
-            return True
+            return True, None
         except Exception as e:
-            print(f"Error guardando memoria en LanceDB: {e}")
-            return False
+            error_msg = f"Error guardando memoria en LanceDB: {e}"
+            print(error_msg)
+            return False, error_msg
 
     def search_memory(self, query: str, limit: int = 5) -> List[dict]:
         """Busca recuerdos semánticamente similares a la query."""

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Send, ArrowLeft, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
+import { api } from "@/lib/api";
 
 interface Message {
     id: number;
@@ -30,22 +31,46 @@ export default function ChatPage() {
         }
     }, [messages]);
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.trim()) return;
 
-        const userMsg = { id: Date.now(), role: "user", content: input };
-        setMessages([...messages, userMsg]);
+        const currentInput = input;
+        const userMsg = { id: Date.now(), role: "user", content: currentInput };
+        const placeholderId = Date.now() + 1;
+        const placeholderMsg = {
+            id: placeholderId,
+            role: "system",
+            content: `Analyzing intent... [Role: ${personality.toUpperCase()}]. Proceed with caution.`,
+            personality: personality
+        };
+
+        setMessages((prev) => [...prev, userMsg, placeholderMsg]);
         setInput("");
 
-        // Mock AI response
-        setTimeout(() => {
-            setMessages((prev) => [...prev, {
-                id: Date.now() + 1,
-                role: "system",
-                content: `Analyzing intent... [Role: ${personality.toUpperCase()}]. Proceed with caution.`,
-                personality: personality
-            }]);
-        }, 1000);
+        try {
+            const result = await api.chat.send(currentInput, personality);
+            
+            if (result && result.response) {
+                setMessages((prev) => prev.map(msg => 
+                    msg.id === placeholderId 
+                        ? { ...msg, content: result.response } 
+                        : msg
+                ));
+            } else {
+                setMessages((prev) => prev.map(msg => 
+                    msg.id === placeholderId 
+                        ? { ...msg, content: "Connection lost. My silence is not approval." } 
+                        : msg
+                ));
+            }
+        } catch (error) {
+            console.error("Chat error:", error);
+            setMessages((prev) => prev.map(msg => 
+                msg.id === placeholderId 
+                    ? { ...msg, content: "System failure. Intervention required." } 
+                    : msg
+            ));
+        }
     };
 
     return (
