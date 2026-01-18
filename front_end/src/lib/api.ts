@@ -45,6 +45,7 @@ export const api = {
         return [];
       }
     },
+  },
 
   chat: {
     send: async (message: string, personality: string = 'ZEN', context: object = {}) => {
