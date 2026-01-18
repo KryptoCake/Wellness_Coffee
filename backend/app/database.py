@@ -1,14 +1,9 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
-import os
-from dotenv import load_dotenv
+from app.core.config import settings
 
-load_dotenv()
-
-# Construir URL de base de datos.
-# Nota: En Docker usamos el nombre del servicio 'db', localmente localhost.
-# La URL debe empezar con postgresql+asyncpg://
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg://wellness_admin:change_this_secure_password@localhost/wellness_coffee")
+# Usar la URL configurada en settings
+DATABASE_URL = settings.DATABASE_URL
 
 engine = create_async_engine(
     DATABASE_URL,

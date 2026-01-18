@@ -1,0 +1,29 @@
+#1
+
+## Error Type
+Console Error
+
+## Error Message
+Failed to save memory
+
+
+    at Object.add (src/lib/api.ts:24:33)
+    at async handleNext (src/components/onboarding/Step2Anchor.tsx:23:9)
+
+## Code Frame
+  22 |           }),
+  23 |         });
+> 24 |         if (!response.ok) throw new Error('Failed to save memory');
+     |                                 ^
+  25 |         return await response.json();
+  26 |       } catch (error) {
+  27 |         console.error('Error adding memory:', error);
+
+Next.js version: 16.1.1 (Turbopack)
+
+
+#2 error en aplicacion 
+
+este error es al enviarle un chat en la aplicacion
+
+Analyzing intent... [Role: ZEN]. Proceed with caution.

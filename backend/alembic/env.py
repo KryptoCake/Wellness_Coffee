@@ -21,7 +21,9 @@ config = context.config
 # Establecer la URL de la base de datos programáticamente
 database_url = os.getenv("DATABASE_URL")
 if database_url:
-    config.set_main_option("sqlalchemy.url", database_url)
+    # Alembic necesita un driver síncrono para run_migrations_online estándar
+    sync_url = database_url.replace("asyncpg", "psycopg")
+    config.set_main_option("sqlalchemy.url", sync_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
