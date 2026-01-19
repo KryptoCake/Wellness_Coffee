@@ -81,7 +81,8 @@ export const api = {
         });
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(getErrorMessage(errorData, 'Failed to send chat message'));
+          const specificMessage = getErrorMessage(errorData, 'Unknown error');
+          throw new Error(`Failed to send chat message (${response.status} ${response.statusText}): ${specificMessage}`);
         }
         return await response.json();
       } catch (error) {
